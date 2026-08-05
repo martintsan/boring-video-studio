@@ -3,8 +3,13 @@ import {
   type AgentEvent,
   chat,
   createProject,
+  getConfig,
+  getModels,
+  getProviders,
   listProjects,
   previewUrl,
+  type ProviderInfo,
+  setConfig,
   watchProject,
 } from "./lib/api";
 
@@ -23,6 +28,10 @@ export function App() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [nonce, setNonce] = useState(1);
+  const [providers, setProviders] = useState<ProviderInfo[]>([]);
+  const [models, setModels] = useState<{ id: string; name: string }[]>([]);
+  const [provider, setProvider] = useState("");
+  const [model, setModel] = useState("");
   const logRef = useRef<HTMLDivElement>(null);
 
   // Load projects on mount.
@@ -32,6 +41,38 @@ export function App() {
       if (p.length > 0) setActive((a) => a ?? p[0]);
     });
   }, []);
+
+  // Load providers + current model selection on mount.
+  useEffect(() => {
+    void (async () => {
+      const [{ active: activeProvider, providers: list }, config] = await Promise.all([
+        getProviders(),
+        getConfig(),
+      ]);
+      setProviders(list);
+      const p = config.provider ?? activeProvider ?? list[0]?.id ?? "";
+      setProvider(p);
+      if (p) {
+        const ms = await getModels(p);
+        setModels(ms);
+        setModel(config.model ?? ms[0]?.id ?? "");
+      }
+    })();
+  }, []);
+
+  async function onProviderChange(p: string) {
+    setProvider(p);
+    const ms = await getModels(p);
+    setModels(ms);
+    const first = ms[0]?.id ?? "";
+    setModel(first);
+    await setConfig(p, first || undefined);
+  }
+
+  async function onModelChange(m: string) {
+    setModel(m);
+    await setConfig(provider, m);
+  }
 
   // Hot reload: reload the preview iframe when the active project's files change.
   useEffect(() => {
@@ -96,6 +137,25 @@ export function App() {
           ))}
         </select>
         <button onClick={onNewProject}>+ New</button>
+
+        <span className="spacer" />
+
+        <select value={provider} onChange={(e) => void onProviderChange(e.target.value)}>
+          {providers.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.label}
+              {p.configured ? "" : " (no key)"}
+            </option>
+          ))}
+        </select>
+        <select value={model} onChange={(e) => void onModelChange(e.target.value)}>
+          {models.length === 0 && <option value="">—</option>}
+          {models.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.name}
+            </option>
+          ))}
+        </select>
       </header>
 
       <main className="panes">

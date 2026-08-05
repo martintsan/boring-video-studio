@@ -1,5 +1,6 @@
 import { ModelRuntime } from "@earendil-works/pi-coding-agent";
 import { apiKeyFor, PROVIDERS } from "../config/providers.js";
+import { getSelection } from "./selection.js";
 
 // One shared ModelRuntime for the process. pi-ai ships every provider's base URL
 // and model catalog; we just inject the API keys the user configured (via env)
@@ -28,8 +29,9 @@ export function configuredProviders(): string[] {
 // Resolve the model to run: BVS_PROVIDER + BVS_MODEL if set, else the first
 // configured provider's first model, else any available model.
 export function resolveModel(runtime: ModelRuntime) {
-  const provider = process.env.BVS_PROVIDER ?? configuredProviders()[0] ?? "anthropic";
-  const modelId = process.env.BVS_MODEL;
+  const selection = getSelection();
+  const provider = selection.provider ?? configuredProviders()[0] ?? "anthropic";
+  const modelId = selection.model;
 
   if (modelId) {
     const picked = runtime.getModel(provider, modelId);

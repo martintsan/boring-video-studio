@@ -27,6 +27,34 @@ export function previewUrl(projectId: string, nonce: number): string {
   return `/api/projects/${projectId}/preview?t=${nonce}`;
 }
 
+export interface ProviderInfo {
+  id: string;
+  label: string;
+  configured: boolean;
+}
+
+export async function getProviders(): Promise<{ active: string | null; providers: ProviderInfo[] }> {
+  return (await fetch("/bvs/providers")).json();
+}
+
+export async function getModels(provider: string): Promise<{ id: string; name: string }[]> {
+  const res = await fetch(`/bvs/models?provider=${encodeURIComponent(provider)}`);
+  return ((await res.json()) as { models: { id: string; name: string }[] }).models;
+}
+
+export async function getConfig(): Promise<{ provider?: string; model?: string }> {
+  return (await fetch("/bvs/config")).json();
+}
+
+export async function setConfig(provider: string, model?: string): Promise<{ provider?: string; model?: string }> {
+  const res = await fetch("/bvs/config", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ provider, model }),
+  });
+  return res.json();
+}
+
 // POST chat and stream SSE events (fetch, since EventSource is GET-only).
 export async function chat(
   projectId: string,

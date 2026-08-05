@@ -4,7 +4,8 @@ import chokidar from "chokidar";
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { configuredProviders, getModelRuntime } from "./ai/modelRuntime.js";
-import { getProjectSession } from "./ai/sessionRegistry.js";
+import { getSelection, setSelection } from "./ai/selection.js";
+import { applySelectedModel, getProjectSession } from "./ai/sessionRegistry.js";
 import { PROVIDERS } from "./config/providers.js";
 import { serializeEvent } from "./lib/serializeEvent.js";
 import { createProject, listProjects, projectDir } from "./projects/store.js";
@@ -33,13 +34,23 @@ bvs.get("/health", (c) => c.json({ ok: true }));
 bvs.get("/providers", (c) => {
   const configured = new Set(configuredProviders());
   return c.json({
-    active: process.env.BVS_PROVIDER ?? configuredProviders()[0] ?? null,
+    active: getSelection().provider ?? configuredProviders()[0] ?? null,
     providers: PROVIDERS.map((p) => ({
       id: p.id,
       label: p.label,
       configured: configured.has(p.id),
     })),
   });
+});
+
+// Active provider/model. POST applies to new and live sessions immediately.
+bvs.get("/config", (c) => c.json(getSelection()));
+
+bvs.post("/config", async (c) => {
+  const body = await c.req.json<{ provider?: string; model?: string }>();
+  setSelection(body);
+  await applySelectedModel();
+  return c.json(getSelection());
 });
 
 bvs.get("/models", async (c) => {

@@ -27,6 +27,9 @@ body {
   background: #fff;
   border-bottom: 1px solid #e4e4e7;
 }
+.topbar .spacer {
+  flex: 1;
+}
 .topbar select,
 .topbar button {
   font: inherit;

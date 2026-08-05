@@ -43,3 +43,11 @@ export async function getProjectSession(projectId: string, cwd: string): Promise
   sessions.set(projectId, session);
   return session;
 }
+
+// Apply the currently-selected model to all live sessions (preserves history).
+export async function applySelectedModel(): Promise<void> {
+  if (sessions.size === 0) return;
+  const modelRuntime = await getModelRuntime();
+  const model = resolveModel(modelRuntime);
+  await Promise.all([...sessions.values()].map((session) => session.setModel(model)));
+}
