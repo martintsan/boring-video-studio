@@ -13,7 +13,31 @@ for the editing surface, and adds the agent + project layers on top.
   iframe). Hot-reloads on the daemon's `file-change` SSE.
 - **Model picker** — choose the underlying pi model/provider.
 
-## Planned structure (fill in M2–M3)
+## Run (M2)
+
+Two processes. Terminal 1 — daemon (with a provider key):
+
+```
+cd ../daemon && export ANTHROPIC_API_KEY=sk-...   # or another provider's key
+export BVS_VIDEOS_ROOT="$PWD/../videos"
+npm run build && npm run start:node               # :4319
+```
+
+Terminal 2 — web dev server (proxies /api and /bvs to the daemon):
+
+```
+npm run dev        # http://127.0.0.1:5319
+```
+
+Open the URL, create a project, and chat: the agent writes HyperFrames HTML into
+the project dir, the preview iframe renders it, and edits hot-reload the preview.
+
+## Structure
+
+- `src/App.tsx` — two-pane shell: chat (left) + preview iframe (right), project picker.
+- `src/lib/api.ts` — daemon client: projects, chat SSE (fetch stream), file-change EventSource.
+
+## Planned structure (M3)
 
 ```
 src/
