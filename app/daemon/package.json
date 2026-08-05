@@ -1,0 +1,30 @@
+{
+  "name": "@boring-video-studio/daemon",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Local Node backend. HyperFrames editing/preview/render API (via @hyperframes/studio-server) + embedded pi agent, one session per video project.",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start:node": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hyperframes/studio-server": "0.7.94",
+    "@hyperframes/core": "0.7.94",
+    "@hyperframes/producer": "0.7.94",
+    "@hyperframes/engine": "0.7.94",
+    "@earendil-works/pi-coding-agent": "0.83.0",
+    "@earendil-works/pi-ai": "0.83.0",
+    "hono": "^4",
+    "@hono/node-server": "^1",
+    "chokidar": "^3"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "tsx": "^4",
+    "@types/node": "^22"
+  }
+}

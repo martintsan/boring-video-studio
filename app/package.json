@@ -1,0 +1,15 @@
+{
+  "name": "boring-video-studio",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Open-source agent-native video studio — chat-driven HyperFrames video generation with live preview & edit. Agent base: pi. Editor: HyperFrames Studio.",
+  "type": "module",
+  "workspaces": [
+    "daemon",
+    "web"
+  ],
+  "scripts": {
+    "dev": "echo 'M0 scaffold. Wire daemon + web in M1/M2 (see README.md milestones).'"
+  },
+  "license": "MIT"
+}
