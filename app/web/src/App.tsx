@@ -12,6 +12,7 @@ import {
   setConfig,
   watchProject,
 } from "./lib/api";
+import { Home } from "./Home";
 
 interface Entry {
   id: number;
@@ -32,6 +33,7 @@ export function App() {
   const [models, setModels] = useState<{ id: string; name: string }[]>([]);
   const [provider, setProvider] = useState("");
   const [model, setModel] = useState("");
+  const [home, setHome] = useState(true);
   const logRef = useRef<HTMLDivElement>(null);
 
   // Load projects on mount.
@@ -100,8 +102,13 @@ export function App() {
     if (!name) return;
     const id = await createProject(name);
     setProjects(await listProjects());
+    openProject(id);
+  }
+
+  function openProject(id: string) {
     setActive(id);
     setEntries([]);
+    setHome(false);
   }
 
   async function onSend() {
@@ -127,16 +134,14 @@ export function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <strong>Boring Video Studio</strong>
-        <select value={active ?? ""} onChange={(e) => setActive(e.target.value || null)}>
-          {projects.length === 0 && <option value="">no projects</option>}
-          {projects.map((p) => (
-            <option key={p} value={p}>
-              {p}
-            </option>
-          ))}
-        </select>
-        <button onClick={onNewProject}>+ New</button>
+        {!home && active ? (
+          <>
+            <button onClick={() => setHome(true)}>← Projects</button>
+            <strong>{active}</strong>
+          </>
+        ) : (
+          <strong>Boring Video Studio</strong>
+        )}
 
         <span className="spacer" />
 
@@ -158,7 +163,10 @@ export function App() {
         </select>
       </header>
 
-      <main className="panes">
+      {home || !active ? (
+        <Home projects={projects} onOpen={openProject} onNew={onNewProject} />
+      ) : (
+        <main className="panes">
         <section className="chat">
           <div className="log" ref={logRef}>
             {entries.map((e) => (
@@ -193,7 +201,8 @@ export function App() {
             <div className="empty">No project selected</div>
           )}
         </section>
-      </main>
+        </main>
+      )}
     </div>
   );
 }
