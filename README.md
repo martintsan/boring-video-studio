@@ -12,6 +12,8 @@ It then hands the approved plan to [HyperFrames](https://www.hyperframes.dev), w
 
 The existing `verysmallwoods-video` skill remains available as the complete VerySmallWoods publishing workflow for videos, covers, platform copy, blog posts, and social posts.
 
+The `english-video` skill is the English-language counterpart of that pipeline: the same full-release shape, retargeted at an English-speaking audience — finished video, five-ratio covers, YouTube kit, X thread, LinkedIn post, blog article, and newsletter issue, plus English-specific narration and thumbnail rules that CJK pipelines do not cover.
+
 ## Installation
 
 Install `boring-video` and its planning stages:
@@ -59,3 +61,28 @@ $to-scenes Redesign the visual direction for this narration.
 ```text
 $to-storyboard Turn SCENES.md into a HyperFrames storyboard.
 ```
+
+## English publishing pipeline
+
+Install the English release pipeline on its own (this lives in the fork, not upstream yet):
+
+```bash
+npx skills add martintsan/boring-video-studio --global --skill english-video
+```
+
+Invoke it with a topic or a finished English script:
+
+```text
+$english-video Turn this post into a full English release: video, covers, YouTube, X, LinkedIn, blog, newsletter.
+```
+
+It asks for the design preset, the narration source (TTS or self-recorded), and the platform set, then runs to the delivery checklist: master render, five-ratio covers, `youtube.md`, `x-thread.md`, `linkedin.md`, `blog.md`, `newsletter.md`, and a 9:16 short-form cut.
+
+What it adds over a plain faceless run:
+
+- **English voice targets** — 140–160 wpm, Flesch-Kincaid grade 7–9, contractions required, one idea per sentence.
+- **A pronunciation pass before synthesis** — `scripts/scan-english-pronunciation.sh` flags homographs (`read`, `live`, `record`), dot-file names, version strings, and `a`/`an` mistakes while they are still free to fix.
+- **English thumbnail discipline** — five-word ceiling, no phrase broken across lines, and a mandatory 240px legibility test.
+- **Per-platform hard limits** — verified YouTube title/description/chapter rules, X's 23-character URL cost, LinkedIn's ~140-character mobile fold.
+
+It reuses the `boring-video` planning artifacts when they exist, so `$boring-video` → `$english-video` is the full plan-to-release path.

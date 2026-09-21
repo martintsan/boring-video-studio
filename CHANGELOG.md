@@ -8,6 +8,12 @@ tag(如 `v0.1.0`)用于标记发版节点,方便对照。
 
 ## [Unreleased]
 
+- **新 skill `english-video`** —— 面向英文受众的**个人全套发布流水线**，与 `verysmallwoods-video` 同构，但按英文生态重写。一个选题 = 一套发布包：成片（4K master + 1080p）、五比例封面、`youtube.md`、`x-thread.md`、`linkedin.md`、`blog.md`、`newsletter.md`，外加一条 ≤30s 的 9:16 短视频切条。视频本体仍委托 `/hyperframes` → `/faceless-explainer`。
+  - **`references/pronunciation.md` + `scripts/scan-english-pronunciation.sh`** —— 英文版的「多音字扫描」。跑 TTS **前**扫一遍：同形异音词（`read` / `live` / `record` / `present`）、点号文件名（`DESIGN.md`）、版本号（`v2.14`）、`3x` / `~50ms` 这类读不出来的符号、以及 `a MVP` 这种冠词错（元音**音**开头要用 `an`）。判定权留给 agent，脚本只捞候选。修法沿用中文流水线那个梯子：① 扩成无歧义短语 → ② 换说法 → ③ 已成片则单句重生成挖补。
+  - **英文字幕/封面硬约束** —— 封面 ≤5 词、不许跨行断短语、大写只用于 ≤3 词、**240px / 120px 缩图可读性强制验收**；正文行长 45–75 字符、禁手动连字符、display 字号收紧 tracking。
+  - **平台硬限制（已于 2026-07 核实）** —— YouTube 标题 100 / 描述 5000 / tag 总计 500 字符，搜索截断 ~60；章节必须 `0:00` 起、≥3 条、每条 ≥10s。X 每条 280、**URL 一律计 23 字符**、emoji 计 2。LinkedIn 上限 3000，但决定触达的是 **~140（移动端）/ ~210（桌面）的 see-more 折行**，且 2000–3000 与 <150 是两头强、600–1500 最弱。
+  - **发布阶梯** —— YouTube（canonical）→ 博客 → X（链博客不链裸视频）→ LinkedIn（原生上传 + 首条评论放链接）→ 新闻信；七个面向同一个关键词、同一条主张、七种写法，发货前逐项对齐。
+  - **与 `boring-video` 打通** —— 已有 `BEATS.md` / `NARRATION.md` / `SCENES.md` / `STORYBOARD.md` 时直接复用，`$boring-video` → `$english-video` 即完整「策划 → 发布」路径。
 - **仓库结构** —— 六个 skill 按**三层职责**归入 `skills/<category>/` 子目录(参考
   [mattpocock/skills](https://github.com/mattpocock/skills) 的组织方式):`orchestration/`
   (blockframe-video、finance-stock-video)、`building-blocks/`(producing-video、
